@@ -1,0 +1,99 @@
+import os
+from os.path import exists
+from urllib.parse import urlparse
+
+import dotenv
+import requests
+
+from exceptions import IncorrectURL, InvalidToken, NotFindLink
+
+
+def get_user_info(token: str):
+    """Return info in json-format."""
+    get_info_url = 'https://api-ssl.bitly.com/v4/user'
+    headers = {
+        'Authorization': f'Bearer {token}',
+    }
+
+    response = requests.get(url=get_info_url, headers=headers)
+    response.raise_for_status()
+    user_info = response.json()
+
+    return user_info
+
+
+def create_shorten_link(long_url: str, token: str) -> str:
+    """Return short link"""
+    url = 'https://api-ssl.bitly.com/v4/shorten'
+    headers = {
+        'Authorization': f'Bearer {token}',
+        'Content-Type': 'application/json',
+    }
+    request_data = {
+        'long_url': f'{long_url}'
+    }
+
+    response = requests.post(url=url, headers=headers, json=request_data)
+    if response.status_code == 400:
+        raise IncorrectURL(long_url)
+    elif response.status_code == 403:
+        raise InvalidToken('Token is invalid')
+    response_info = response.json()
+    shorten_link = response_info['link']
+
+    return shorten_link
+
+
+def count_clicks(bitlink_id: str, token: str) -> int:
+    """Return counts of click by URL"""
+    url = f'https://api-ssl.bitly.com/v4/bitlinks/{bitlink_id}/clicks'
+    headers = {
+        'Authorization': f'Bearer {token}',
+    }
+    params = {
+        'unit': 'month',
+        'units': '-1'
+    }
+
+    response = requests.get(url=url, headers=headers, params=params)
+    if response.status_code == 400:
+        raise IncorrectURL(bitlink_id)
+    elif response.status_code == 403:
+        raise InvalidToken('Token is invalid')
+    elif response.status_code == 404:
+        raise NotFindLink(bitlink_id)
+    response_info = response.json()
+    clicks_counts = response_info['link_clicks'][0]['clicks']
+
+    return clicks_counts
+
+
+def is_bitlink(link: str, token: str) -> bool:
+    """Check URL and return True if it's a bitlink"""
+    parse_url = urlparse(link)
+    transform_link = parse_url.hostname + parse_url.path
+
+    headers = {
+        'Authorization': f'Bearer {token}'
+    }
+    url = f'https://api-ssl.bitly.com/v4/bitlinks/{transform_link}'
+    response = requests.get(url=url, headers=headers)
+
+    return response.ok
+
+
+if __name__ == '__main__':
+    dotenv_path = os.path.join(os.path.dirname(__file__), '.env')
+    if not exists(dotenv_path):
+        raise FileNotFoundError('Not found .env file')
+    bitly_api_token = dotenv.get_key(dotenv_path=dotenv_path, key_to_get='BITLY_TOKEN')
+
+    user_input = input('Ваша ссылка: ')
+    if is_bitlink(user_input, token=bitly_api_token):
+        bitlink_path = urlparse(user_input).path
+        bitlink_id = f'bit.ly{bitlink_path}'
+        clicks_count = count_clicks(bitlink_id=bitlink_id, token=bitly_api_token)
+        print(f'Количество кликов по ссылке: {clicks_count}')
+    else:
+        shorten_link = create_shorten_link(long_url=user_input, token=bitly_api_token)
+        print(f'Битлинк: {shorten_link}')

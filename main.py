@@ -1,3 +1,4 @@
+import argparse
 import os
 from os.path import exists
 from urllib.parse import urlparse
@@ -71,7 +72,10 @@ def count_clicks(bitlink_id: str, token: str) -> int:
 def is_bitlink(link: str, token: str) -> bool:
     """Check URL and return True if it's a bitlink"""
     parse_url = urlparse(link)
-    transform_link = parse_url.hostname + parse_url.path
+    try:
+        transform_link = parse_url.hostname + parse_url.path
+    except TypeError:
+        raise IncorrectURL(link)
 
     headers = {
         'Authorization': f'Bearer {token}'
@@ -83,17 +87,22 @@ def is_bitlink(link: str, token: str) -> bool:
 
 
 if __name__ == '__main__':
+    parser = argparse.ArgumentParser(description='Скрипт возвращает сокращенную ссылку на ваш URL, либо если была '
+                                                 'указана сокращенная ссылка показывает количество кликов по ней.')
+    parser.add_argument('url', help='Ссылка или битлинк')
+    args = parser.parse_args()
+    url = args.url
+
     dotenv_path = os.path.join(os.path.dirname(__file__), '.env')
     if not exists(dotenv_path):
         raise FileNotFoundError('Not found .env file')
     bitly_api_token = dotenv.get_key(dotenv_path=dotenv_path, key_to_get='BITLY_TOKEN')
 
-    user_input = input('Ваша ссылка: ')
-    if is_bitlink(user_input, token=bitly_api_token):
-        bitlink_path = urlparse(user_input).path
+    if is_bitlink(url, token=bitly_api_token):
+        bitlink_path = urlparse(url).path
         bitlink_id = f'bit.ly{bitlink_path}'
         clicks_count = count_clicks(bitlink_id=bitlink_id, token=bitly_api_token)
         print(f'Количество кликов по ссылке: {clicks_count}')
     else:
-        shorten_link = create_shorten_link(long_url=user_input, token=bitly_api_token)
+        shorten_link = create_shorten_link(long_url=url, token=bitly_api_token)
         print(f'Битлинк: {shorten_link}')

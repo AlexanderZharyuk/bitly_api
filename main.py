@@ -73,14 +73,14 @@ def is_bitlink(link: str, token: str) -> bool:
     """Check URL and return True if it's a bitlink"""
     parse_url = urlparse(link)
     try:
-        transform_link = parse_url.hostname + parse_url.path
+        transformed_link = parse_url.hostname + parse_url.path
     except TypeError:
         raise IncorrectURL(link)
 
     headers = {
         'Authorization': f'Bearer {token}'
     }
-    url = f'https://api-ssl.bitly.com/v4/bitlinks/{transform_link}'
+    url = f'https://api-ssl.bitly.com/v4/bitlinks/{transformed_link}'
     response = requests.get(url=url, headers=headers)
 
     return response.ok

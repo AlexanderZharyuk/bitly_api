@@ -6,7 +6,7 @@ from urllib.parse import urlparse
 import dotenv
 import requests
 
-from exceptions import IncorrectURL, InvalidToken, NotFindLink
+from exceptions import IncorrectURL
 
 
 def get_user_info(token: str):
@@ -34,10 +34,7 @@ def create_shorten_link(long_url: str, token: str) -> str:
     }
 
     response = requests.post(url=url, headers=headers, json=request_data)
-    if response.status_code == 400:
-        raise IncorrectURL(long_url)
-    elif response.status_code == 403:
-        raise InvalidToken('Token is invalid')
+    response.raise_for_status()
     response_info = response.json()
     shorten_link = response_info['link']
 
@@ -56,12 +53,7 @@ def count_clicks(bitlink_id: str, token: str) -> int:
     }
 
     response = requests.get(url=url, headers=headers, params=params)
-    if response.status_code == 400:
-        raise IncorrectURL(bitlink_id)
-    elif response.status_code == 403:
-        raise InvalidToken('Token is invalid')
-    elif response.status_code == 404:
-        raise NotFindLink(bitlink_id)
+    response.raise_for_status()
     response_info = response.json()
     clicks_counts = response_info['link_clicks'][0]['clicks']
 

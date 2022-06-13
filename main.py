@@ -28,7 +28,6 @@ def create_shorten_link(long_url: str, token: str) -> str:
     url = 'https://api-ssl.bitly.com/v4/shorten'
     headers = {
         'Authorization': f'Bearer {token}',
-        'Content-Type': 'application/json',
     }
     request_data = {
         'long_url': f'{long_url}'

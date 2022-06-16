@@ -90,8 +90,8 @@ if __name__ == '__main__':
     bitly_api_token = dotenv.get_key(dotenv_path=dotenv_path, key_to_get='BITLY_TOKEN')
 
     if is_bitlink(url, token=bitly_api_token):
-        bitlink_path = urlparse(url).path
-        bitlink_id = f'bit.ly{bitlink_path}'
+        bitlink_url = urlparse(url)
+        bitlink_id = bitlink_url.hostname + bitlink_url.path
         clicks_count = count_clicks(bitlink_id=bitlink_id, token=bitly_api_token)
         print(f'Количество кликов по ссылке: {clicks_count}')
     else:

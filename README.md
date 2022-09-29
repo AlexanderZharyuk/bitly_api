@@ -1,46 +1,44 @@
-# BITLY LINK CREATOR 
+# BITLY LINK CREATOR
 
-Хотите сократить ссылку? Данный скрипт поможет вам сделать это прямо из вашего терминала!
+Want to shorten a link? This script will help you do it right from your terminal!
 
-## Предустановка
+## Get started
 
-Все используемые библиотеки указаны в файле **requirements.txt**
-Для установки библиотек в виртуальное окружение используйте команды:
+All libraries that used in project are listed in the **requirements.txt** file
+To install libraries in your virtual environment, use the command:
 
 ```
 pip install -r requirements.txt
 ```
 
-Для работы скрипта вам потребуется создать .env файл, в котором должен находится ваш API-токен:
+For the script to work, you will need to create an `.env` file, which should contain your API token:
 
 ```
 BITLY_TOKEN={YOUR_TOKEN}
 ```
 
-Для того, чтобы узнать, как получить токен - обратитесь к официальной документации [BITLY](https://dev.bitly.com/).
+To learn how to get a token, please refer to the official documentation [BITLY](https://dev.bitly.com/).
 
-### Начало работы
+### How to use
 
-Для старта скрипта напишите в консоле, находясь в директории с файлом:
+Go to the project folder in your console and write:
 ```
-python3 main.py [URL]
+python3 main.py [url]
 ```
-Где вместо URL параметром передайте полную ссылку или битлинк.
+Where, instead of the URL parameter, pass the full link or bitlink, if you want to check count of clicks of your bitlink.
 
-Пример выполнения скрипта:
+Example of script execution:
 ```
 python3 main.py https://dvmn.org/
 
 OUTPUT:
-Битлинк: https://bit.ly/3MPf9iV
+Bitlink: https://bit.ly/3MPf9iV
 ```
 
-## Создано при помощи
+## Created with
 
-* [DEVMAN](https://dvmn.org/) - Обучающая платформа
-* [BITLY](https://bitly.com/) - Сервис по созданию коротких ссылок
+* [BITLY](https://bitly.com/) - Service for creating short links
 
-## Авторы
+## The author
 
 * [Alexander Zharyuk](https://gist.github.com/AlexanderZharyuk)
-

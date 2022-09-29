@@ -19,7 +19,7 @@ BITLY_TOKEN={YOUR_TOKEN}
 
 To learn how to get a token, please refer to the official documentation [BITLY](https://dev.bitly.com/).
 
-### How to use
+## How to use
 
 Go to the project folder in your console and write:
 ```
